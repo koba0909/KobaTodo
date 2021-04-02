@@ -1,12 +1,13 @@
 package com.koba.kobatodo.presenter
 
-import android.database.Observable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.koba.kobatodo.databinding.ItemTodoListBinding
-import com.koba.kobatodo.domain.TodoModel
+import com.koba.kobatodo.domain.model.TodoModel
+import com.koba.kobatodo.domain.model.TodoState
+import com.koba.kobatodo.domain.usecase.TodoUseCase
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
@@ -20,8 +21,8 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
             notifyDataSetChanged()
         }
 
-    private val _clickSubject = PublishSubject.create<Pair<View, TodoModel>>()
-    val clickSubject: Subject<Pair<View, TodoModel>>
+    private val _clickSubject = PublishSubject.create<Triple<View, Int, TodoModel>>()
+    val clickSubject: Subject<Triple<View, Int, TodoModel>>
         get() = _clickSubject
 
     override fun getItemCount() = _todoList.size
@@ -40,15 +41,39 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
         holder.bind(_todoList[position])
     }
 
-    inner class TodoViewHolder(binding: ItemTodoListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class TodoViewHolder(private val binding: ItemTodoListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.root.setOnClickListener {
-                _clickSubject.onNext(it to _todoList[adapterPosition])
+            with(binding) {
+                root.setOnClickListener {
+                    _clickSubject.onNext(Triple(it, adapterPosition, _todoList[adapterPosition]))
+                }
+                checkBoxState.setOnClickListener {
+                    _clickSubject.onNext(Triple(it, adapterPosition, _todoList[adapterPosition]))
+                }
             }
         }
 
-        fun bind(item: TodoModel){
-
+        fun bind(item: TodoModel) {
+            with(binding) {
+                tvId.text = item.id.toString()
+                tvDescription.text = item.description
+                when (item.state) {
+                    is TodoState.Complete -> {
+                        checkBoxState.isChecked = true
+                        checkBoxState.text = TodoUseCase.STATUS_COMPLETE
+                    }
+                    is TodoState.UnChecking -> {
+                        checkBoxState.isChecked = false
+                        checkBoxState.text = TodoUseCase.STATUS_UN_CHECKING
+                    }
+                    is TodoState.Unknown -> {
+                        checkBoxState.isChecked = false
+                        checkBoxState.text = ""
+                    }
+                }
+                tvDate.text = item.date
+            }
         }
     }
 }
