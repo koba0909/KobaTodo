@@ -7,10 +7,12 @@ data class TodoModel(
     val date: String
 ) {
     override fun toString(): String =
-        "id : $id\n" +
-                "description : $description\n" +
-                "state : ${state.javaClass.simpleName}\n" +
-                "date : $date"
+        """
+            id: $id
+            description : $description
+            state : ${state.javaClass.simpleName}
+            date : $date
+        """.trimIndent()
 }
 
 sealed class TodoState {

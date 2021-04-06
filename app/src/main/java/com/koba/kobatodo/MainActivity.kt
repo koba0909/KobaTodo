@@ -1,7 +1,7 @@
 package com.koba.kobatodo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.koba.kobatodo.presenter.TodoFragment
 
 class MainActivity : AppCompatActivity() {

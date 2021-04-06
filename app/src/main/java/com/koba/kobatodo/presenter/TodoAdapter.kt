@@ -41,8 +41,9 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
         holder.bind(_todoList[position])
     }
 
-    inner class TodoViewHolder(private val binding: ItemTodoListBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class TodoViewHolder(
+        private val binding: ItemTodoListBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
         init {
             with(binding) {
                 root.setOnClickListener {
